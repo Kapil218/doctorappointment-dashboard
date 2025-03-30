@@ -3,44 +3,55 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
+import Image from 'next/image';
 
 const DoctorCard = ({ doctor, onDelete }) => {
   return (
     <div className={styles.doctorCard}>
-      <div className={styles.doctorInfo}>
-        <h3>{doctor.name}</h3>
-        <p>
-          <strong>Specialty:</strong> {doctor.specialty}
-        </p>
-        <p>
-          <strong>Experience:</strong> {doctor.experience} years
-        </p>
-        <p>
-          <strong>Rating:</strong> {doctor.rating}
-        </p>
-        <p>
-          <strong>Location:</strong> {doctor.location}
-        </p>
+      <div className={styles.doctorImageContainer}>
+        <Image
+          src={doctor.image || "/defaultpic.jpg"}
+          alt={`Dr. ${doctor.name}`}
+          className={styles.doctorImage}
+          width={400}
+          height={400}
+          priority
+        />
       </div>
-      <div className={styles.doctorActions}>
-        <Link
-          href={`/doctors/${doctor.id}/edit`}
-          className={styles.editButton}
-        >
-          Edit
-        </Link>
-        <Link
-          href={`/doctors/${doctor.id}/schedule`}
-          className={styles.scheduleButton}
-        >
-          Schedule
-        </Link>
-        <button
-          onClick={() => onDelete(doctor.id)}
-          className={styles.deleteButton}
-        >
-          Delete
-        </button>
+      <div className={styles.doctorContent}>
+        <div className={styles.doctorInfo}>
+          <h3>Dr. {doctor.name}</h3>
+          <p className={styles.specialty}>{doctor.specialty}</p>
+          <p className={styles.experience}>
+            <span>👨‍⚕️</span> {doctor.experience} experience
+          </p>
+          <p className={styles.rating}>
+            <span>⭐</span> {doctor.rating} Rating
+          </p>
+          <p className={styles.location}>
+            <span>📍</span> {doctor.location}
+          </p>
+        </div>
+        <div className={styles.doctorActions}>
+          <Link
+            href={`/doctors/edit/${doctor.id}/${doctor.id}`}
+            className={styles.editButton}
+          >
+            Edit
+          </Link>
+          <Link
+            href={`/doctors/schedule/${doctor.id}`}
+            className={styles.scheduleButton}
+          >
+            Schedule
+          </Link>
+          <button
+            onClick={() => onDelete(doctor.id)}
+            className={styles.deleteButton}
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -195,94 +206,142 @@ const DoctorsList = () => {
   }
 
   return (
-    <div className={styles.doctorsPage}>
-      <PageHeader />
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Doctors</h1>
+        <Link href="/doctors/add" className={styles.addButton}>
+          Add Doctor
+        </Link>
+      </div>
 
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search doctors"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+      <input
+        type="text"
+        placeholder="Search doctors..."
+        className={styles.searchBar}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+
+      <div className={styles.filterSection}>
+        <div className={styles.filterHeader}>
+          <h2 className={styles.filterTitle}>Filter By:</h2>
+          
+          <div className={styles.filterContent}>
+            <div className={styles.filterGroup}>
+              <h3 className={styles.filterGroupTitle}>Rating:</h3>
+              <select
+                className={styles.select}
+                value={pendingFilters.rating}
+                onChange={(e) => handlePendingFilterChange("rating", e.target.value)}
+              >
+                <option value="">All</option>
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <option key={rating} value={rating.toString()}>
+                    {rating} star
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <h3 className={styles.filterGroupTitle}>Experience:</h3>
+              <select
+                className={styles.select}
+                value={pendingFilters.experience}
+                onChange={(e) => handlePendingFilterChange("experience", e.target.value)}
+              >
+                <option value="">All</option>
+                {[
+                  "15 years",
+                  "10-15 years",
+                  "5-10 years",
+                  "3-5 years",
+                  "1-3 years",
+                  "0-1 years",
+                ].map((exp) => (
+                  <option key={exp} value={exp}>
+                    {exp}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <h3 className={styles.filterGroupTitle}>Gender:</h3>
+              <select
+                className={styles.select}
+                value={pendingFilters.gender}
+                onChange={(e) => handlePendingFilterChange("gender", e.target.value)}
+              >
+                <option value="">All</option>
+                {["Male", "Female"].map((gender) => (
+                  <option key={gender} value={gender}>
+                    {gender}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterActions}>
+              <button onClick={resetFilters} className={styles.resetButton}>
+                Reset
+              </button>
+              <button onClick={applyFilters} className={styles.applyButton}>
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className={styles.content}>
         <aside className={styles.sidebar}>
-          <div className={styles.filterHeader}>
-            <div className={styles.filterTitle}>
-              <h3>Filter By:</h3>
-            </div>
-            <div className={styles.filterButtons}>
-              <span className={styles.resetButton} onClick={resetFilters}>
-                Reset
-              </span>
-              <span className={styles.applyButton} onClick={applyFilters}>
-                Apply
-              </span>
-            </div>
-          </div>
-
-          <div className={styles.filterSection}>
-            <h4>Rating</h4>
-            {["", "1", "2", "3", "4", "5"].map((r) => (
-              <label key={r} className={styles.filterOption}>
-                <input
-                  type="radio"
-                  name="rating"
-                  value={r}
-                  checked={pendingFilters.rating === r}
-                  onChange={() => handlePendingFilterChange("rating", r)}
-                />
-                {r ? `${r} star` : "Show all"}
-              </label>
-            ))}
-          </div>
-
-          <div className={styles.filterSection}>
-            <h4>Experience</h4>
-            {["", "15", "10-15", "5-10", "3-5", "1-3", "0-1"].map((exp) => (
-              <label key={exp} className={styles.filterOption}>
-                <input
-                  type="radio"
-                  name="experience"
-                  value={exp}
-                  checked={pendingFilters.experience === exp}
-                  onChange={() => handlePendingFilterChange("experience", exp)}
-                />
-                {exp ? `${exp} years` : "Show all"}
-              </label>
-            ))}
-          </div>
-
-          <div className={styles.filterSection}>
-            <h4>Gender</h4>
-            {["", "Male", "Female"].map((g) => (
-              <label key={g} className={styles.filterOption}>
-                <input
-                  type="radio"
-                  name="gender"
-                  value={g}
-                  checked={pendingFilters.gender === g}
-                  onChange={() => handlePendingFilterChange("gender", g)}
-                />
-                {g || "Show all"}
-              </label>
-            ))}
-          </div>
-        </aside>
-
-        <div className={styles.mainContent}>
           <div className={styles.doctorsList}>
             {doctors.length === 0 ? (
               <div className={styles.noDoctors}>No doctors found</div>
             ) : (
               doctors.map((doctor) => (
-                <DoctorCard
-                  key={doctor.id}
-                  doctor={doctor}
-                  onDelete={handleDelete}
-                />
+                <div key={doctor.id} className={styles.doctorCard}>
+                  <div className={styles.doctorImageContainer}>
+                    <Image
+                      src={doctor.image || "/defaultpic.jpg"}
+                      alt={`Dr. ${doctor.name}`}
+                      className={styles.doctorImage}
+                      width={400}
+                      height={400}
+                      priority
+                    />
+                  </div>
+                  <div className={styles.doctorContent}>
+                    <div className={styles.doctorInfo}>
+                      <h3>Dr. {doctor.name}</h3>
+                      <p className={styles.specialty}>{doctor.specialty}</p>
+                      <p className={styles.experience}>
+                        <span>👨‍⚕️</span> {doctor.experience} experience
+                      </p>
+                      <p className={styles.rating}>
+                        <span>⭐</span> {doctor.rating} Rating
+                      </p>
+                      <p className={styles.location}>
+                        <span>📍</span> {doctor.location}
+                      </p>
+                    </div>
+                    <div className={styles.doctorActions}>
+                      <Link href={`/doctors/edit/${doctor.id}`} className={styles.editButton}>
+                        Edit
+                      </Link>
+                      <Link href={`/doctors/schedule/${doctor.id}`} className={styles.scheduleButton}>
+                        Schedule
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(doctor.id)}
+                        className={styles.deleteButton}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))
             )}
           </div>
@@ -291,37 +350,71 @@ const DoctorsList = () => {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className={styles.paginationButton}
+              className={`${styles.paginationButton} ${styles.paginationNav}`}
             >
-              &lt; Prev
+              ← Prev
             </button>
 
-            {Array.from(
-              { length: Math.min(totalPages, 5) },
-              (_, index) => index + 1
-            ).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPage(p)}
-                className={`${styles.paginationButton} ${
-                  page === p ? styles.active : ""
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+            {/* First page */}
+            {page > 3 && (
+              <>
+                <button
+                  onClick={() => setPage(1)}
+                  className={`${styles.paginationButton} ${page === 1 ? styles.active : ''}`}
+                >
+                  1
+                </button>
+                <span className={styles.paginationEllipsis}>...</span>
+              </>
+            )}
 
-            {totalPages > 5 && <span>...</span>}
+            {/* Page numbers */}
+            {Array.from(
+              { length: Math.min(5, totalPages) },
+              (_, i) => {
+                const pageNum = Math.max(
+                  1,
+                  Math.min(
+                    page - 2 + i,
+                    totalPages - 4
+                  )
+                );
+                return pageNum;
+              }
+            )
+              .filter((value, index, self) => self.indexOf(value) === index)
+              .map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`${styles.paginationButton} ${page === p ? styles.active : ''}`}
+                >
+                  {p}
+                </button>
+              ))}
+
+            {/* Last page */}
+            {page < totalPages - 2 && (
+              <>
+                <span className={styles.paginationEllipsis}>...</span>
+                <button
+                  onClick={() => setPage(totalPages)}
+                  className={`${styles.paginationButton} ${page === totalPages ? styles.active : ''}`}
+                >
+                  {totalPages}
+                </button>
+              </>
+            )}
 
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className={styles.paginationButton}
+              className={`${styles.paginationButton} ${styles.paginationNav}`}
             >
-              Next &gt;
+              Next →
             </button>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

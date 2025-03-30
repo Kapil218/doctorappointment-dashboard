@@ -13,15 +13,22 @@ const AddDoctor = () => {
     degree: "",
     location: "",
     gender: "",
-    rating: "",
-    available_times: [],
+    available_times: {}
   });
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedSlots, setSelectedSlots] = useState([]);
+
+  const timeSlots = {
+    morning: ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30"],
+    afternoon: ["12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30"],
+    evening: ["16:00", "16:30", "17:00", "17:30"]
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/api/v1/doctors", {
+      const response = await fetch("http://localhost:3000/api/v1/doctors/add-doctor", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,35 +56,71 @@ const AddDoctor = () => {
     }));
   };
 
-  const handleTimeChange = (index, field, value) => {
-    const newTimes = [...formData.available_times];
-    if (!newTimes[index]) {
-      newTimes[index] = {};
-    }
-    newTimes[index][field] = value;
-    setFormData((prev) => ({
+  const handleDateAdd = () => {
+    if (!selectedDate || selectedSlots.length === 0) return;
+
+    setFormData(prev => ({
       ...prev,
-      available_times: newTimes,
+      available_times: {
+        ...prev.available_times,
+        [selectedDate]: {
+          morning: selectedSlots.filter(slot => {
+            const hour = parseInt(slot.split(':')[0]);
+            return hour < 12;
+          }),
+          afternoon: selectedSlots.filter(slot => {
+            const hour = parseInt(slot.split(':')[0]);
+            return hour >= 12 && hour < 16;
+          }),
+          evening: selectedSlots.filter(slot => {
+            const hour = parseInt(slot.split(':')[0]);
+            return hour >= 16;
+          })
+        }
+      }
+    }));
+
+    setSelectedDate("");
+    setSelectedSlots([]);
+  };
+
+  const handleDateRemove = (dateToRemove) => {
+    const newAvailableTimes = { ...formData.available_times };
+    delete newAvailableTimes[dateToRemove];
+    setFormData(prev => ({
+      ...prev,
+      available_times: newAvailableTimes
     }));
   };
 
-  const addTimeSlot = () => {
-    setFormData((prev) => ({
-      ...prev,
-      available_times: [...prev.available_times, { day: "", time: "" }],
-    }));
+  const handleSlotToggle = (slot) => {
+    setSelectedSlots(prev => {
+      if (prev.includes(slot)) {
+        return prev.filter(s => s !== slot);
+      } else {
+        return [...prev, slot];
+      }
+    });
   };
 
-  const removeTimeSlot = (index) => {
-    setFormData((prev) => ({
+  const handleSlotUpdate = (date, slot) => {
+    setFormData(prev => ({
       ...prev,
-      available_times: prev.available_times.filter((_, i) => i !== index),
+      available_times: prev.available_times.map(d => {
+        if (d.date === date) {
+          const newSlots = d.slots.includes(slot)
+            ? d.slots.filter(s => s !== slot)
+            : [...d.slots, slot];
+          return { ...d, slots: newSlots };
+        }
+        return d;
+      })
     }));
   };
 
   return (
-    <div className={styles.addDoctor}>
-      <h1 className={styles.pageTitle}>Add New Doctor</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Add New Doctor</h1>
 
       {error && <div className={styles.error}>{error}</div>}
 
@@ -158,60 +201,86 @@ const AddDoctor = () => {
           </select>
         </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="rating">Rating:</label>
-          <input
-            type="number"
-            id="rating"
-            name="rating"
-            value={formData.rating}
-            onChange={handleChange}
-            min="0"
-            max="5"
-            step="0.1"
-            required
-          />
-        </div>
+        <div className={styles.timeSlotsSection}>
+          <h3>Available Dates and Time Slots</h3>
+          
+          <div className={styles.dateSelector}>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+            />
+            
+            {Object.entries(timeSlots).map(([period, slots]) => (
+              <div key={period} className={styles.periodSection}>
+                <h4 className={styles.periodTitle}>{period.charAt(0).toUpperCase() + period.slice(1)}</h4>
+                <div className={styles.slotSelector}>
+                  {slots.map(slot => (
+                    <label key={slot} className={styles.slotLabel}>
+                      <input
+                        type="checkbox"
+                        checked={selectedSlots.includes(slot)}
+                        onChange={() => {
+                          setSelectedSlots(prev => 
+                            prev.includes(slot) 
+                              ? prev.filter(s => s !== slot)
+                              : [...prev, slot]
+                          );
+                        }}
+                        className={styles.slotCheckbox}
+                      />
+                      <span>{slot}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
 
-        <div className={styles.timeSlots}>
-          <h3>Available Time Slots</h3>
-          <button type="button" onClick={addTimeSlot} className={styles.addButton}>
-            Add Time Slot
-          </button>
+            <button
+              type="button"
+              onClick={handleDateAdd}
+              disabled={!selectedDate || selectedSlots.length === 0}
+              className={styles.addDateButton}
+            >
+              Add Date
+            </button>
+          </div>
 
-          {formData.available_times.map((slot, index) => (
-            <div key={index} className={styles.timeSlot}>
-              <select
-                value={slot.day || ""}
-                onChange={(e) => handleTimeChange(index, "day", e.target.value)}
-                required
-              >
-                <option value="">Select Day</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-              </select>
-
-              <input
-                type="time"
-                value={slot.time || ""}
-                onChange={(e) => handleTimeChange(index, "time", e.target.value)}
-                required
-              />
-
-              <button
-                type="button"
-                onClick={() => removeTimeSlot(index)}
-                className={styles.removeButton}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+          {Object.keys(formData.available_times).length === 0 ? (
+            <p className={styles.noDateMessage}>No dates added yet</p>
+          ) : (
+            Object.entries(formData.available_times).map(([date, periods]) => (
+              <div key={date} className={styles.dateSection}>
+                <div className={styles.dateHeader}>
+                  <h4>{new Date(date).toLocaleDateString()}</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleDateRemove(date)}
+                    className={styles.removeDateButton}
+                  >
+                    Remove
+                  </button>
+                </div>
+                {Object.entries(periods).map(([period, slots]) => (
+                  slots.length > 0 && (
+                    <div key={period} className={styles.periodSection}>
+                      <h5 className={styles.periodTitle}>
+                        {period.charAt(0).toUpperCase() + period.slice(1)}
+                      </h5>
+                      <div className={styles.selectedSlots}>
+                        {slots.map(slot => (
+                          <span key={slot} className={styles.selectedSlot}>
+                            {slot}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                ))}
+              </div>
+            ))
+          )}
         </div>
 
         <div className={styles.formActions}>

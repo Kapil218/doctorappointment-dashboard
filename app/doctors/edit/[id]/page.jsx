@@ -1,20 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
 const EditDoctor = ({ params }) => {
+  const unwrappedParams = use(params);
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     specialty: "",
-    experience: "",
+    experience: 0,
     degree: "",
     location: "",
     gender: "",
-    rating: "",
-    available_times: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,7 +22,7 @@ const EditDoctor = ({ params }) => {
     const fetchDoctor = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/v1/doctors/${params.id}`,
+          `http://localhost:3000/api/v1/doctors/${unwrappedParams.id}`,
           {
             credentials: "include",
           }
@@ -42,8 +41,6 @@ const EditDoctor = ({ params }) => {
             degree: data.data.degree || "",
             location: data.data.location || "",
             gender: data.data.gender || "",
-            rating: data.data.rating || "",
-            available_times: data.data.available_times || [],
           });
         }
       } catch (err) {
@@ -55,15 +52,15 @@ const EditDoctor = ({ params }) => {
     };
 
     fetchDoctor();
-  }, [params.id]);
+  }, [unwrappedParams.id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/doctors/update/${params.id}`,
+        `http://localhost:3000/api/v1/doctors/update/${unwrappedParams.id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -88,32 +85,6 @@ const EditDoctor = ({ params }) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleTimeChange = (index, field, value) => {
-    const newTimes = [...formData.available_times];
-    if (!newTimes[index]) {
-      newTimes[index] = {};
-    }
-    newTimes[index][field] = value;
-    setFormData((prev) => ({
-      ...prev,
-      available_times: newTimes,
-    }));
-  };
-
-  const addTimeSlot = () => {
-    setFormData((prev) => ({
-      ...prev,
-      available_times: [...prev.available_times, { day: "", time: "" }],
-    }));
-  };
-
-  const removeTimeSlot = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      available_times: prev.available_times.filter((_, i) => i !== index),
     }));
   };
 
@@ -161,7 +132,15 @@ const EditDoctor = ({ params }) => {
             id="experience"
             name="experience"
             value={formData.experience}
-            onChange={handleChange}
+            onChange={(e) => handleChange({
+              ...e,
+              target: {
+                ...e.target,
+                name: 'experience',
+                value: parseInt(e.target.value) || 0  // Convert to integer
+              }
+            })}
+            min="0"
             required
           />
         </div>
@@ -204,62 +183,6 @@ const EditDoctor = ({ params }) => {
             <option value="female">Female</option>
             <option value="other">Other</option>
           </select>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="rating">Rating:</label>
-          <input
-            type="number"
-            id="rating"
-            name="rating"
-            value={formData.rating}
-            onChange={handleChange}
-            min="0"
-            max="5"
-            step="0.1"
-            required
-          />
-        </div>
-
-        <div className={styles.timeSlots}>
-          <h3>Available Time Slots</h3>
-          <button type="button" onClick={addTimeSlot} className={styles.addButton}>
-            Add Time Slot
-          </button>
-
-          {formData.available_times.map((slot, index) => (
-            <div key={index} className={styles.timeSlot}>
-              <select
-                value={slot.day || ""}
-                onChange={(e) => handleTimeChange(index, "day", e.target.value)}
-                required
-              >
-                <option value="">Select Day</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-              </select>
-
-              <input
-                type="time"
-                value={slot.time || ""}
-                onChange={(e) => handleTimeChange(index, "time", e.target.value)}
-                required
-              />
-
-              <button
-                type="button"
-                onClick={() => removeTimeSlot(index)}
-                className={styles.removeButton}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
         </div>
 
         <div className={styles.formActions}>
