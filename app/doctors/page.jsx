@@ -85,10 +85,16 @@ const DoctorsList = () => {
 
   const debounceRef = useRef(null);
 
+  // Add a useEffect to log page changes for debugging
+  useEffect(() => {
+    console.log('Current page:', page);
+  }, [page]);
+
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setDebouncedQuery(query);
+      setPage(1); // Reset to first page when search query changes
     }, 500);
 
     return () => {
@@ -98,21 +104,47 @@ const DoctorsList = () => {
 
   const fetchDoctors = async () => {
     try {
+      setLoading(true);
       const params = new URLSearchParams();
 
+      // Check if any filters or search are applied
+      const hasFilters = debouncedQuery.trim() !== "" || 
+                        filters.rating || 
+                        filters.experience || 
+                        filters.gender;
+
+      // Add search query if it exists
       if (debouncedQuery.trim() !== "") {
         params.append("query", debouncedQuery);
       }
 
-      if (filters.rating) params.append("rating", filters.rating);
-      if (filters.experience) params.append("experience", filters.experience);
-      if (filters.gender) params.append("gender", filters.gender);
+      // Add filters only if they have values
+      if (filters.rating) {
+        // Convert rating to number to match backend's parseFloat
+        const numericRating = parseFloat(filters.rating);
+        if (!isNaN(numericRating)) {
+          params.append("rating", numericRating.toString());
+        }
+      }
+      if (filters.experience) {
+        const exp = filters.experience.replace(" years", "").trim();
+        params.append("experience", exp);
+      }
+      if (filters.gender) {
+        params.append("gender", filters.gender.toLowerCase());
+      }
 
-      params.append("page", page.toString());
-      params.append("perPage", "6");
+      // Add pagination parameters only if we're not fetching top rated doctors without filters
+      if (hasFilters || !params.has("topRated")) {
+        params.append("page", page.toString());
+        params.append("perPage", "6");
+      }
+
+      const queryString = params.toString();
+      console.log('Fetching with params:', queryString);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/doctors?${params}`,
+        `http://localhost:3000/api/v1/doctors?${queryString}`,
         {
           credentials: "include",
         }
@@ -123,13 +155,25 @@ const DoctorsList = () => {
       }
 
       const result = await response.json();
+      console.log('API Response:', result); // Debug log
       
       if (result.statusCode === 200) {
         setDoctors(result.data.doctors);
+        
+        // Handle pagination based on response
         if (result.data.pagination) {
-          setTotalPages(result.data.pagination.totalPages);
+          // We have pagination info
+          const { totalPages: backendTotalPages, currentPage } = result.data.pagination;
+          console.log('Backend pagination:', { totalPages: backendTotalPages, currentPage });
+          setTotalPages(backendTotalPages);
+          // Ensure frontend page matches backend current page
+          if (currentPage !== page) {
+            setPage(currentPage);
+          }
         } else {
-          setTotalPages(Math.ceil(result.data.doctors.length / 6));
+          // No pagination (top rated case or error)
+          setTotalPages(1);
+          setPage(1);
         }
       } else {
         throw new Error(result.message || "Failed to fetch doctors");
@@ -142,9 +186,23 @@ const DoctorsList = () => {
     }
   };
 
+  // Update useEffect to handle page changes
+  useEffect(() => {
+    // Only fetch if we have filters or we're not on top rated
+    const hasFilters = debouncedQuery.trim() !== "" || 
+                      filters.rating || 
+                      filters.experience || 
+                      filters.gender;
+    
+    if (hasFilters || page > 1) {
+      fetchDoctors();
+    }
+  }, [debouncedQuery, filters, page]);
+
+  // Initial fetch for first page
   useEffect(() => {
     fetchDoctors();
-  }, [debouncedQuery, filters, page]);
+  }, []); // Empty dependency array for initial fetch
 
   const handleDelete = async (doctorId) => {
     if (!window.confirm("Are you sure you want to delete this doctor?")) {
@@ -153,7 +211,7 @@ const DoctorsList = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/doctors/${doctorId}`,
+        `http://localhost:3000/api/v1/doctors/remove/${doctorId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -164,7 +222,8 @@ const DoctorsList = () => {
         throw new Error("Failed to delete doctor");
       }
 
-      // Refresh the doctors list
+      // Refresh the doctors list and reset to first page
+      setPage(1);
       fetchDoctors();
     } catch (err) {
       setError(err.message);
@@ -178,13 +237,14 @@ const DoctorsList = () => {
 
   const applyFilters = () => {
     setFilters(pendingFilters);
-    setPage(1);
+    setPage(1); // Reset to first page when filters are applied
   };
 
   const resetFilters = () => {
     setPendingFilters({ rating: "", experience: "", gender: "" });
     setFilters({ rating: "", experience: "", gender: "" });
-    setPage(1);
+    setQuery(""); // Also reset search query
+    setPage(1); // Reset to first page when filters are reset
   };
 
   if (loading) {
@@ -235,11 +295,12 @@ const DoctorsList = () => {
                 onChange={(e) => handlePendingFilterChange("rating", e.target.value)}
               >
                 <option value="">All</option>
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <option key={rating} value={rating.toString()}>
-                    {rating} star
-                  </option>
-                ))}
+                <option value="4.5">4.5+ ⭐</option>
+                <option value="4">4+ ⭐</option>
+                <option value="3.5">3.5+ ⭐</option>
+                <option value="3">3+ ⭐</option>
+                <option value="2">2+ ⭐</option>
+                <option value="1">1+ ⭐</option>
               </select>
             </div>
 
@@ -251,18 +312,12 @@ const DoctorsList = () => {
                 onChange={(e) => handlePendingFilterChange("experience", e.target.value)}
               >
                 <option value="">All</option>
-                {[
-                  "15 years",
-                  "10-15 years",
-                  "5-10 years",
-                  "3-5 years",
-                  "1-3 years",
-                  "0-1 years",
-                ].map((exp) => (
-                  <option key={exp} value={exp}>
-                    {exp}
-                  </option>
-                ))}
+                <option value="15">15+ years</option>
+                <option value="10-15">10-15 years</option>
+                <option value="5-10">5-10 years</option>
+                <option value="3-5">3-5 years</option>
+                <option value="1-3">1-3 years</option>
+                <option value="0-1">0-1 years</option>
               </select>
             </div>
 
@@ -348,7 +403,10 @@ const DoctorsList = () => {
 
           <div className={styles.pagination}>
             <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() => {
+                console.log('Clicking prev, current page:', page);
+                setPage((p) => Math.max(1, p - 1));
+              }}
               disabled={page === 1}
               className={`${styles.paginationButton} ${styles.paginationNav}`}
             >
@@ -372,21 +430,25 @@ const DoctorsList = () => {
             {Array.from(
               { length: Math.min(5, totalPages) },
               (_, i) => {
-                const pageNum = Math.max(
-                  1,
-                  Math.min(
-                    page - 2 + i,
-                    totalPages - 4
-                  )
-                );
-                return pageNum;
+                let pageNum;
+                if (page <= 3) {
+                  pageNum = i + 1;
+                } else if (page >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = page - 2 + i;
+                }
+                return Math.max(1, Math.min(pageNum, totalPages));
               }
             )
               .filter((value, index, self) => self.indexOf(value) === index)
               .map((p) => (
                 <button
                   key={p}
-                  onClick={() => setPage(p)}
+                  onClick={() => {
+                    console.log('Clicking page number:', p);
+                    setPage(p);
+                  }}
                   className={`${styles.paginationButton} ${page === p ? styles.active : ''}`}
                 >
                   {p}
@@ -407,7 +469,10 @@ const DoctorsList = () => {
             )}
 
             <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onClick={() => {
+                console.log('Clicking next, current page:', page);
+                setPage((p) => Math.min(totalPages, p + 1));
+              }}
               disabled={page === totalPages}
               className={`${styles.paginationButton} ${styles.paginationNav}`}
             >
