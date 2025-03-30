@@ -1,0 +1,240 @@
+.schedulePage {
+  width: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  color: #333;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background-color: #e0e0e0;
+}
+
+.successMessage {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.errorMessage {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.scheduleContainer {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.addDaySection {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.addDayForm {
+  display: flex;
+  gap: 12px;
+}
+
+.daySelect {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.addDayButton {
+  padding: 10px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addDayButton:hover:not(:disabled) {
+  background-color: #388e3c;
+}
+
+.addDayButton:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.noSchedule {
+  text-align: center;
+  padding: 40px 0;
+  color: #666;
+  font-style: italic;
+}
+
+.daySchedule {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.daySchedule:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.dayHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dayTitle {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #333;
+}
+
+.removeButton {
+  padding: 6px 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.removeButton:hover {
+  background-color: #d32f2f;
+}
+
+.timeSlots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.timeSlot {
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.timeSlot:hover {
+  background-color: #e0e0e0;
+}
+
+.timeSlot.selected {
+  background-color: #2196f3;
+  color: white;
+}
+
+.timeSlot.selected:hover {
+  background-color: #1976d2;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.saveButton {
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveButton:hover {
+  background-color: #1976d2;
+}
+
+.cancelButton {
+  padding: 10px 20px;
+  background-color: #f5f5f5;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .addDayForm {
+    flex-direction: column;
+  }
+
+  .timeSlots {
+    gap: 8px;
+  }
+
+  .timeSlot {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .saveButton,
+  .cancelButton {
+    width: 100%;
+  }
+}
