@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 const EditDoctor = ({ params }) => {
@@ -37,7 +38,7 @@ const EditDoctor = ({ params }) => {
           setFormData({
             name: data.data.name || "",
             specialty: data.data.specialty || "",
-            experience: data.data.experience || "",
+            experience: parseInt(data.data.experience) || 0,
             degree: data.data.degree || "",
             location: data.data.location || "",
             gender: data.data.gender || "",
@@ -57,6 +58,7 @@ const EditDoctor = ({ params }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setError(null);
       const response = await fetch(
         `http://localhost:3000/api/v1/doctors/update/${unwrappedParams.id}`,
         {
@@ -84,7 +86,7 @@ const EditDoctor = ({ params }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === 'experience' ? parseInt(value) || 0 : value,
     }));
   };
 
@@ -92,97 +94,104 @@ const EditDoctor = ({ params }) => {
     return <div className={styles.loading}>Loading...</div>;
   }
 
-  if (error) {
-    return <div className={styles.error}>{error}</div>;
-  }
-
   return (
-    <div className={styles.editDoctor}>
-      <h1 className={styles.pageTitle}>Edit Doctor</h1>
+    <div className={styles.container}>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.title}>Edit Doctor</h1>
+        <Link href="/doctors" className={styles.backButton}>
+          ← Back to Doctors
+        </Link>
+      </div>
+
+      {error && <div className={styles.error}>{error}</div>}
 
       <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formGroup}>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label htmlFor="name">Doctor Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter doctor's name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="specialty">Specialty</label>
+            <input
+              type="text"
+              id="specialty"
+              name="specialty"
+              placeholder="Enter specialty"
+              value={formData.specialty}
+              onChange={handleChange}
+              required
+            />
+          </div>
         </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="specialty">Specialty:</label>
-          <input
-            type="text"
-            id="specialty"
-            name="specialty"
-            value={formData.specialty}
-            onChange={handleChange}
-            required
-          />
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label htmlFor="experience">Experience (years)</label>
+            <input
+              type="number"
+              id="experience"
+              name="experience"
+              placeholder="Enter years of experience"
+              value={formData.experience}
+              onChange={handleChange}
+              min="0"
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="degree">Degree</label>
+            <input
+              type="text"
+              id="degree"
+              name="degree"
+              placeholder="Enter medical degree"
+              value={formData.degree}
+              onChange={handleChange}
+              required
+            />
+          </div>
         </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="experience">Experience (years):</label>
-          <input
-            type="number"
-            id="experience"
-            name="experience"
-            value={formData.experience}
-            onChange={(e) => handleChange({
-              ...e,
-              target: {
-                ...e.target,
-                name: 'experience',
-                value: parseInt(e.target.value) || 0  // Convert to integer
-              }
-            })}
-            min="0"
-            required
-          />
-        </div>
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label htmlFor="location">Location</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder="Enter clinic location"
+              value={formData.location}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="degree">Degree:</label>
-          <input
-            type="text"
-            id="degree"
-            name="degree"
-            value={formData.degree}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="location">Location:</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="gender">Gender:</label>
-          <select
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
+          <div className={styles.formGroup}>
+            <label htmlFor="gender">Gender</label>
+            <select
+              id="gender"
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
         </div>
 
         <div className={styles.formActions}>

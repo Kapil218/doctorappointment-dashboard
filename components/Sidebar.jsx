@@ -2,10 +2,24 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import styles from "./Sidebar.module.css";
 
 const Sidebar = () => {
   const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -25,30 +39,50 @@ const Sidebar = () => {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
-    <div className={styles.sidebar}>
-      <div className={styles.logo}>
-        <h2>Admin Panel</h2>
+    <>
+      {isMobile && (
+        <button onClick={toggleMobileMenu} className={styles.hamburgerButton}>
+          <div className={`${styles.hamburgerIcon} ${isMobileMenuOpen ? styles.open : ''}`}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+      )}
+      
+      <div className={`${styles.sidebar} ${isMobile ? styles.mobile : ''} ${isMobileMenuOpen ? styles.open : ''}`}>
+        <div className={styles.logo}>
+          <h2>Admin Panel</h2>
+        </div>
+        
+        <nav className={styles.navigation}>
+          <Link href="/" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
+            <span className={styles.icon}>📊</span>
+            Appointments
+          </Link>
+          <Link href="/doctors" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
+            <span className={styles.icon}>👨‍⚕️</span>
+            Doctors
+          </Link>
+        </nav>
+
+        <div className={styles.bottomSection}>
+          <button onClick={handleLogout} className={styles.logoutButton}>
+            <span className={styles.icon}>🚪</span>
+            Logout
+          </button>
+        </div>
       </div>
       
-      <nav className={styles.navigation}>
-        <Link href="/" className={styles.navLink}>
-          <span className={styles.icon}>📊</span>
-          Appointments
-        </Link>
-        <Link href="/doctors" className={styles.navLink}>
-          <span className={styles.icon}>👨‍⚕️</span>
-          Doctors
-        </Link>
-      </nav>
-
-      <div className={styles.bottomSection}>
-        <button onClick={handleLogout} className={styles.logoutButton}>
-          <span className={styles.icon}>🚪</span>
-          Logout
-        </button>
-      </div>
-    </div>
+      {isMobile && isMobileMenuOpen && (
+        <div className={styles.overlay} onClick={toggleMobileMenu}></div>
+      )}
+    </>
   );
 };
 

@@ -1,182 +1,207 @@
 .container {
   padding: 2rem;
-  background-color: #f5f5f5;
+  background: #1a1a1a;
   min-height: 100vh;
+  color: #fff;
 }
 
-.header {
+.pageHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
-.title {
+.pageTitle {
   font-size: 2rem;
-  font-weight: 600;
-  color: #333;
+  color: #fff;
+  margin: 0;
 }
 
 .addButton {
-  background-color: #4CAF50;
-  color: white;
+  display: inline-flex;
+  align-items: center;
   padding: 0.75rem 1.5rem;
-  border: none;
+  background-color: #3b82f6;
+  color: white;
   border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  justify-content: center;
 }
 
 .addButton:hover {
-  background-color: #45a049;
+  background-color: #2563eb;
+  transform: translateY(-1px);
 }
 
 .searchBar {
   width: 100%;
   max-width: 600px;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
+  padding: 0.875rem 1rem;
+  background-color: #2d2d2d;
+  border: 1px solid #3d3d3d;
   border-radius: 8px;
-  margin: 0 auto 2rem;
+  margin: 1.5rem 0;
   font-size: 1rem;
-  display: block;
+  color: #fff;
+  transition: all 0.2s ease;
 }
 
 .searchBar:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.searchBar::placeholder {
+  color: #6b7280;
 }
 
 .filterSection {
-  background-color: white;
+  background: #1f1f1f;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #2d2d2d;
   margin-bottom: 2rem;
 }
 
 .filterHeader {
   display: flex;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  align-items: flex-start;
   gap: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .filterTitle {
   font-size: 1.25rem;
-  font-weight: 600;
-  color: #333;
+  font-weight: 500;
+  color: #fff;
   margin: 0;
   white-space: nowrap;
 }
 
 .filterContent {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
   flex-wrap: wrap;
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .filterGroup {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin: 0;
+  gap: 1rem;
+  flex: 1;
   min-width: 200px;
 }
 
 .filterGroupTitle {
   font-size: 1rem;
   font-weight: 500;
-  color: #666;
+  color: #fff;
   margin: 0;
   white-space: nowrap;
+  min-width: 80px;
 }
 
 .select {
   flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
+  padding: 0.75rem 1rem;
+  background-color: #2d2d2d;
+  border: 1px solid #3d3d3d;
   border-radius: 8px;
-  background-color: white;
-  color: #333;
+  color: #fff;
   font-size: 1rem;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.75rem center;
+  background-position: right 1rem center;
   background-size: 1em;
+  padding-right: 2.5rem;
   min-width: 120px;
+  transition: all 0.2s ease;
 }
 
 .select:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .select:hover {
-  border-color: #4CAF50;
+  border-color: #4d4d4d;
 }
 
 .filterActions {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   margin-left: auto;
+  align-items: center;
 }
 
-.resetButton, .applyButton {
+.resetButton,
+.applyButton {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-width: 100px;
 }
 
 .resetButton {
-  background-color: #f5f5f5;
-  color: #666;
-  border: 1px solid #ddd;
+  background-color: #2d2d2d;
+  color: #fff;
+  border: 1px solid #3d3d3d;
 }
 
 .resetButton:hover {
-  background-color: #eee;
+  background-color: #3d3d3d;
+  transform: translateY(-1px);
 }
 
 .applyButton {
-  background-color: #4CAF50;
+  background-color: #3b82f6;
   color: white;
 }
 
 .applyButton:hover {
-  background-color: #45a049;
+  background-color: #2563eb;
+  transform: translateY(-1px);
 }
 
 /* Doctors List */
 .doctorsList {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
 .doctorCard {
-  background-color: white;
+  background: #1f1f1f;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #2d2d2d;
   overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.doctorCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .doctorImageContainer {
   width: 100%;
   height: 200px;
   position: relative;
-  background-color: #f5f5f5;
+  background-color: #2d2d2d;
   overflow: hidden;
 }
 
@@ -185,6 +210,11 @@
   width: 100% !important;
   height: 100% !important;
   position: relative !important;
+  transition: transform 0.3s ease;
+}
+
+.doctorCard:hover .doctorImage {
+  transform: scale(1.05);
 }
 
 .doctorContent {
@@ -193,18 +223,20 @@
 
 .doctorInfo h3 {
   margin: 0 0 0.5rem 0;
-  color: #333;
+  color: #fff;
   font-size: 1.25rem;
 }
 
 .specialty {
-  color: #666;
+  color: #9ca3af;
   margin: 0 0 1rem 0;
   font-size: 0.95rem;
 }
 
-.experience, .rating, .location {
-  color: #666;
+.experience,
+.rating,
+.location {
+  color: #9ca3af;
   margin: 0.5rem 0;
   display: flex;
   align-items: center;
@@ -218,128 +250,421 @@
   margin-top: 1.5rem;
 }
 
-.editButton, .scheduleButton, .deleteButton {
+.editButton,
+.scheduleButton,
+.deleteButton {
   flex: 1;
   padding: 0.75rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   text-align: center;
   text-decoration: none;
   font-size: 0.9rem;
 }
 
 .editButton {
-  background-color: #2196F3;
+  background-color: #3b82f6;
   color: white;
 }
 
 .editButton:hover {
-  background-color: #1976D2;
+  background-color: #2563eb;
+  transform: translateY(-1px);
 }
 
 .scheduleButton {
-  background-color: #FF9800;
+  background-color: #10b981;
   color: white;
 }
 
 .scheduleButton:hover {
-  background-color: #F57C00;
+  background-color: #059669;
+  transform: translateY(-1px);
 }
 
 .deleteButton {
-  background-color: #f44336;
+  background-color: #ef4444;
   color: white;
 }
 
 .deleteButton:hover {
-  background-color: #d32f2f;
+  background-color: #dc2626;
+  transform: translateY(-1px);
 }
 
-/* Loading and Error States */
 .loading {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #fff;
+  font-size: 1.2rem;
 }
 
 .error {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .noDoctors {
   text-align: center;
-  padding: 2rem;
-  color: #666;
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  color: #9ca3af;
+  padding: 3rem 1rem;
+  font-size: 1.1rem;
 }
 
-/* Pagination Styles */
 .pagination {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 0.5rem;
   margin-top: 2rem;
-  padding: 1rem;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .paginationButton {
   padding: 0.5rem 1rem;
-  border: 1px solid #e0e0e0;
-  background-color: white;
-  color: #333;
-  border-radius: 6px;
+  background-color: #2d2d2d;
+  border: 1px solid #3d3d3d;
+  color: #fff;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  transition: all 0.2s ease;
   min-width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
 }
 
 .paginationButton:hover:not(:disabled) {
-  background-color: #f5f5f5;
-  border-color: #4CAF50;
-  color: #4CAF50;
+  background-color: #3d3d3d;
+  transform: translateY(-1px);
 }
 
 .paginationButton:disabled {
-  background-color: #f5f5f5;
-  color: #bdbdbd;
+  opacity: 0.5;
   cursor: not-allowed;
-  border-color: #e0e0e0;
 }
 
 .paginationButton.active {
-  background-color: #4CAF50;
+  background-color: #3b82f6;
+  border-color: #3b82f6;
   color: white;
-  border-color: #4CAF50;
 }
 
 .paginationEllipsis {
-  color: #666;
+  color: #9ca3af;
   padding: 0.5rem;
-  font-weight: bold;
 }
 
 .paginationNav {
-  font-weight: 500;
-  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  padding: 0.5rem;
 }
 
 .paginationNav:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1280px) {
+  .doctorsList {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .doctorsList {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .container {
+    padding: 1.5rem;
+  }
+
+  .filterSection {
+    padding: 1.25rem;
+  }
+
+  .filterHeader {
+    gap: 1.5rem;
+  }
+
+  .filterContent {
+    gap: 1.25rem;
+  }
+
+  .filterGroup {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+
+  .addButton {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .searchBar {
+    max-width: 100%;
+    margin: 0.5rem 0 1.25rem 0;
+    padding: 0.875rem;
+  }
+
+  .filterSection {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filterHeader {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .filterTitle {
+    font-size: 1.1rem;
+  }
+
+  .filterContent {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    gap: 0.75rem;
+  }
+
+  .filterGroupTitle {
+    font-size: 0.95rem;
+    min-width: 0;
+  }
+
+  .select {
+    width: 100%;
+    min-width: 0;
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .filterActions {
+    flex-direction: row;
+    justify-content: stretch;
+    width: 100%;
+    margin: 1.25rem 0 0 0;
+    gap: 1rem;
+  }
+
+  .resetButton,
+  .applyButton {
+    flex: 1;
+    min-width: 0;
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .doctorsList {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .doctorCard {
+    max-width: 100%;
+  }
+
+  .doctorImageContainer {
+    height: 200px;
+  }
+
+  .doctorContent {
+    padding: 1.25rem;
+  }
+
+  .doctorInfo h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .specialty {
+    font-size: 0.9rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .experience,
+  .rating,
+  .location {
+    font-size: 0.875rem;
+    margin: 0.625rem 0;
+  }
+
+  .doctorActions {
+    flex-direction: row;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .editButton,
+  .scheduleButton,
+  .deleteButton {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .pageHeader {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .pageTitle {
+    font-size: 1.25rem;
+  }
+
+  .addButton {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .searchBar {
+    margin: 0.25rem 0 1rem 0;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .filterSection {
+    padding: 1rem;
+    margin: 0.75rem 0 1.25rem 0;
+    border-radius: 8px;
+  }
+
+  .filterHeader {
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .filterTitle {
+    font-size: 1rem;
+  }
+
+  .filterContent {
+    gap: 1rem;
+  }
+
+  .filterGroup {
+    gap: 0.625rem;
+  }
+
+  .filterGroupTitle {
+    font-size: 0.9rem;
+  }
+
+  .select {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .filterActions {
+    flex-direction: column;
+    margin-top: 1rem;
+    gap: 0.75rem;
+  }
+
+  .resetButton,
+  .applyButton {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .doctorsList {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .doctorImageContainer {
+    height: 180px;
+  }
+
+  .doctorContent {
+    padding: 1rem;
+  }
+
+  .doctorInfo h3 {
+    font-size: 1rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .specialty {
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .experience,
+  .rating,
+  .location {
+    font-size: 0.8125rem;
+    margin: 0.5rem 0;
+  }
+
+  .doctorActions {
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-top: 1.25rem;
+  }
+
+  .editButton,
+  .scheduleButton,
+  .deleteButton {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .paginationButton {
+    padding: 0.625rem;
+    min-width: 36px;
+    font-size: 0.875rem;
+  }
 } 

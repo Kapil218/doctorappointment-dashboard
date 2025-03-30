@@ -5,6 +5,28 @@ import { useRouter } from "next/navigation";
 import { use } from "react";
 import styles from "./page.module.css";
 
+const SelectedTimeSlots = ({ slots, onRemoveSlot }) => {
+  return (
+    <div className={styles.slotTags}>
+      {slots.map((slot) => (
+        <div key={slot} className={styles.slotTag}>
+          {slot}
+          <button
+            type="button"
+            onClick={() => onRemoveSlot(slot)}
+            className={styles.removeSlotButton}
+            title="Remove time slot"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            </svg>
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const DoctorSchedule = ({ params }) => {
   const unwrappedParams = use(params);
   const router = useRouter();
@@ -168,6 +190,34 @@ const DoctorSchedule = ({ params }) => {
     });
   };
 
+  const handleRemoveSlot = (date, slot) => {
+    setSchedule(prev => {
+      const newSchedule = { ...prev };
+      const dateSlots = newSchedule[date];
+      
+      // Find which period contains this slot and remove it
+      for (const period in dateSlots) {
+        const slotIndex = dateSlots[period].indexOf(slot);
+        if (slotIndex !== -1) {
+          dateSlots[period] = dateSlots[period].filter(s => s !== slot);
+          
+          // If period is empty, remove it
+          if (dateSlots[period].length === 0) {
+            delete dateSlots[period];
+          }
+          
+          // If no periods left, remove the date
+          if (Object.keys(dateSlots).length === 0) {
+            delete newSchedule[date];
+          }
+          break;
+        }
+      }
+      
+      return newSchedule;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -194,6 +244,29 @@ const DoctorSchedule = ({ params }) => {
     }
   };
 
+  const handleQuickAddWeek = () => {
+    const newSchedule = { ...schedule };
+    const today = new Date();
+    
+    // Add next 7 days
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const dateString = date.toISOString().split('T')[0];
+      
+      // Only add if date doesn't already exist
+      if (!newSchedule[dateString]) {
+        newSchedule[dateString] = {
+          morning: timeSlots.morning,
+          afternoon: timeSlots.afternoon,
+          evening: timeSlots.evening
+        };
+      }
+    }
+
+    setSchedule(newSchedule);
+  };
+
   if (loading) return <div className={styles.loading}>Loading...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
@@ -203,12 +276,27 @@ const DoctorSchedule = ({ params }) => {
 
       <form onSubmit={handleSubmit} className={styles.scheduleForm}>
         <div id="editSection" ref={editSectionRef} className={styles.addDateSection}>
-          <h3>{editingDate ? `Edit Slots for ${new Date(editingDate).toLocaleDateString()}` : 'Add New Date and Time Slots'}</h3>
+          <h3>{editingDate ? `Edit Slots for ${new Date(editingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}` : 'Add New Date and Time Slots'}</h3>
           
           {error && <div className={styles.error}>{error}</div>}
           
           {!editingDate && (
-            <div className={styles.dateSelector}>
+            <div className={styles.quickAddSection}>
+              <button
+                type="button"
+                onClick={handleQuickAddWeek}
+                className={styles.quickAddButton}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" />
+                </svg>
+                Make Next 7 Days Available
+              </button>
+            </div>
+          )}
+          
+          <div className={styles.dateSelector}>
+            {!editingDate && (
               <input
                 type="date"
                 value={selectedDate}
@@ -216,63 +304,63 @@ const DoctorSchedule = ({ params }) => {
                 min={new Date().toISOString().split('T')[0]}
                 className={styles.dateInput}
               />
-            </div>
-          )}
+            )}
 
-          <div className={styles.timeSlotGroups}>
-            {Object.entries(timeSlots).map(([period, slots]) => (
-              <div key={period} className={styles.periodSection}>
-                <h4 className={styles.periodTitle}>
-                  {period.charAt(0).toUpperCase() + period.slice(1)}
-                </h4>
-                <div className={styles.slotGrid}>
-                  {slots.map(slot => (
-                    <label key={slot} className={styles.slotLabel}>
-                      <input
-                        type="checkbox"
-                        checked={selectedSlots.includes(slot)}
-                        onChange={() => handleSlotToggle(slot)}
-                        className={styles.slotCheckbox}
-                      />
-                      <span>{slot}</span>
-                    </label>
-                  ))}
+            <div className={styles.timeSlotGroups}>
+              {Object.entries(timeSlots).map(([period, slots]) => (
+                <div key={period} className={styles.periodSection}>
+                  <h4 className={styles.periodTitle}>
+                    {period.charAt(0).toUpperCase() + period.slice(1)}
+                  </h4>
+                  <div className={styles.slotGrid}>
+                    {slots.map(slot => (
+                      <label key={slot} className={styles.slotLabel}>
+                        <input
+                          type="checkbox"
+                          checked={selectedSlots.includes(slot)}
+                          onChange={() => handleSlotToggle(slot)}
+                          className={styles.slotCheckbox}
+                        />
+                        <span>{slot}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {editingDate ? (
-            <div className={styles.editActions}>
-              <button
-                type="button"
-                onClick={handleUpdateDate}
-                disabled={selectedSlots.length === 0}
-                className={styles.updateButton}
-              >
-                Update Slots
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingDate(null);
-                  setSelectedSlots([]);
-                }}
-                className={styles.cancelButton}
-              >
-                Cancel Edit
-              </button>
+              ))}
             </div>
-          ) : (
-            <button
-              type="button"
-              onClick={handleDateAdd}
-              disabled={!selectedDate || selectedSlots.length === 0}
-              className={styles.addButton}
-            >
-              Add Selected Slots
-            </button>
-          )}
+
+            {editingDate ? (
+              <div className={styles.editActions}>
+                <button
+                  type="button"
+                  onClick={handleUpdateDate}
+                  disabled={selectedSlots.length === 0}
+                  className={styles.updateButton}
+                >
+                  Update Slots
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingDate(null);
+                    setSelectedSlots([]);
+                  }}
+                  className={styles.cancelButton}
+                >
+                  Cancel Edit
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleDateAdd}
+                disabled={!selectedDate || selectedSlots.length === 0}
+                className={styles.addButton}
+              >
+                Add Selected Slots
+              </button>
+            )}
+          </div>
         </div>
 
         <div className={styles.scheduledDates}>
@@ -284,7 +372,7 @@ const DoctorSchedule = ({ params }) => {
             Object.entries(schedule).map(([date, periods]) => (
               <div key={date} className={`${styles.dateCard} ${editingDate === date ? styles.editing : ''}`}>
                 <div className={styles.dateHeader}>
-                  <h4>{new Date(date).toLocaleDateString()}</h4>
+                  <h4>{new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h4>
                   <div className={styles.dateActions}>
                     <button
                       type="button"
@@ -303,22 +391,17 @@ const DoctorSchedule = ({ params }) => {
                     </button>
                   </div>
                 </div>
-                <div className={styles.dateSlots}>
-                  {Object.entries(periods).map(([period, slots]) => (
-                    slots.length > 0 && (
-                      <div key={period} className={styles.periodSlots}>
-                        <h5>{period.charAt(0).toUpperCase() + period.slice(1)}</h5>
-                        <div className={styles.slotTags}>
-                          {slots.map(slot => (
-                            <span key={slot} className={styles.slotTag}>
-                              {slot}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )
-                  ))}
-                </div>
+                {Object.entries(periods).map(([period, slots]) => (
+                  slots.length > 0 && (
+                    <div key={period} className={styles.periodSlots}>
+                      <h5>{period.charAt(0).toUpperCase() + period.slice(1)}</h5>
+                      <SelectedTimeSlots
+                        slots={slots}
+                        onRemoveSlot={(slot) => handleRemoveSlot(date, slot)}
+                      />
+                    </div>
+                  )
+                ))}
               </div>
             ))
           )}
