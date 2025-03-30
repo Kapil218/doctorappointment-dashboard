@@ -1,5 +1,10 @@
 .schedulePage {
-  width: 100%;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #1a1a1a;
+  min-height: 100vh;
+  color: #fff;
 }
 
 .pageHeader {
@@ -10,9 +15,11 @@
 }
 
 .pageTitle {
-  font-size: 1.8rem;
-  color: #333;
-  margin: 0;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #fff;
+  border-bottom: 2px solid #2d2d2d;
+  padding-bottom: 1rem;
 }
 
 .backButton {
@@ -47,166 +54,317 @@
   margin-bottom: 20px;
 }
 
-.scheduleContainer {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-}
-
-.addDaySection {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #eee;
-}
-
-.addDayForm {
+.scheduleForm {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.daySelect {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.addDateSection {
+  background: #2d2d2d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.addDateSection h3 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.dateSelector {
+  margin-bottom: 1.5rem;
+}
+
+.dateInput {
+  background: #1a1a1a;
+  border: 1px solid #3d3d3d;
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
   font-size: 1rem;
-  color: #333;
 }
 
-.addDayButton {
-  padding: 10px 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
+.timeSlotGroups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.periodSection {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.periodTitle {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #3d3d3d;
+  padding-bottom: 0.5rem;
+}
+
+.slotGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+
+.slotLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
   transition: background-color 0.2s;
 }
 
-.addDayButton:hover:not(:disabled) {
-  background-color: #388e3c;
+.slotLabel:hover {
+  background: #3d3d3d;
 }
 
-.addDayButton:disabled {
-  background-color: #a5d6a7;
+.slotCheckbox {
+  accent-color: #0ea5e9;
+  width: 16px;
+  height: 16px;
+}
+
+.addButton {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  width: 100%;
+  max-width: 300px;
+}
+
+.addButton:hover:not(:disabled) {
+  background: #0284c7;
+}
+
+.addButton:disabled {
+  background: #4b5563;
   cursor: not-allowed;
 }
 
+.scheduledDates {
+  background: #2d2d2d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.scheduledDates h3 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
 .noSchedule {
+  color: #9ca3af;
   text-align: center;
-  padding: 40px 0;
-  color: #666;
-  font-style: italic;
+  padding: 2rem;
+  background: #1a1a1a;
+  border-radius: 8px;
 }
 
-.daySchedule {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #eee;
+.dateCard {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
 }
 
-.daySchedule:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+.dateCard.editing {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
 }
 
-.dayHeader {
+.dateActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editButton {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.editButton:hover:not(:disabled) {
+  background: #0284c7;
+}
+
+.editButton:disabled {
+  background: #4b5563;
+  cursor: not-allowed;
+}
+
+.editActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.updateButton {
+  background: #059669;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  flex: 1;
+}
+
+.updateButton:hover:not(:disabled) {
+  background: #047857;
+}
+
+.updateButton:disabled {
+  background: #4b5563;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background: #4b5563;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  flex: 1;
+}
+
+.cancelButton:hover {
+  background: #374151;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dateHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #3d3d3d;
 }
 
-.dayTitle {
-  font-size: 1.2rem;
-  margin: 0;
-  color: #333;
+.dateHeader h4 {
+  color: #fff;
+  font-size: 1.1rem;
 }
 
 .removeButton {
-  padding: 6px 12px;
-  background-color: #f44336;
-  color: white;
+  background: #dc2626;
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 0.875rem;
   transition: background-color 0.2s;
 }
 
 .removeButton:hover {
-  background-color: #d32f2f;
+  background: #b91c1c;
 }
 
-.timeSlots {
+.dateSlots {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.periodSlots h5 {
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.slotTags {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.5rem;
 }
 
-.timeSlot {
-  padding: 8px 12px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
+.slotTag {
+  background: #3d3d3d;
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
 }
 
-.timeSlot:hover {
-  background-color: #e0e0e0;
-}
-
-.timeSlot.selected {
-  background-color: #2196f3;
-  color: white;
-}
-
-.timeSlot.selected:hover {
-  background-color: #1976d2;
-}
-
-.actionButtons {
+.formActions {
+  margin-top: 2rem;
   display: flex;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
+  justify-content: flex-end;
 }
 
-.saveButton {
-  padding: 10px 20px;
-  background-color: #2196f3;
-  color: white;
+.submitButton {
+  background: #059669;
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  font-weight: 500;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 1rem;
   transition: background-color 0.2s;
 }
 
-.saveButton:hover {
-  background-color: #1976d2;
+.submitButton:hover {
+  background: #047857;
 }
 
-.cancelButton {
-  padding: 10px 20px;
-  background-color: #f5f5f5;
-  color: #333;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  text-decoration: none;
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
   text-align: center;
-  transition: background-color 0.2s;
-}
-
-.cancelButton:hover {
-  background-color: #e0e0e0;
 }
 
 @media (max-width: 768px) {
@@ -216,25 +374,38 @@
     gap: 10px;
   }
 
-  .addDayForm {
+  .addDateSection {
     flex-direction: column;
   }
 
-  .timeSlots {
+  .timeSlotGroups {
     gap: 8px;
   }
 
-  .timeSlot {
+  .slotLabel {
     font-size: 0.8rem;
     padding: 6px 10px;
   }
 
-  .actionButtons {
+  .formActions {
     flex-direction: column;
   }
 
-  .saveButton,
-  .cancelButton {
+  .submitButton {
+    width: 100%;
+  }
+
+  .editActions {
+    flex-direction: column;
+  }
+
+  .dateActions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .editButton,
+  .removeButton {
     width: 100%;
   }
 }
