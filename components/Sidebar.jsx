@@ -9,7 +9,7 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/auth/logout", {
+      const response = await fetch("http://localhost:3000/api/v1/users/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -34,15 +34,11 @@ const Sidebar = () => {
       <nav className={styles.navigation}>
         <Link href="/" className={styles.navLink}>
           <span className={styles.icon}>📊</span>
-          Dashboard
+          Appointments
         </Link>
         <Link href="/doctors" className={styles.navLink}>
           <span className={styles.icon}>👨‍⚕️</span>
           Doctors
-        </Link>
-        <Link href="/appointments" className={styles.navLink}>
-          <span className={styles.icon}>📅</span>
-          Appointments
         </Link>
       </nav>
 

@@ -1,31 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-
-// List of specialties for filtering
-const SPECIALTIES = [
-  "Cardiology",
-  "Neurology",
-  "Pediatrics",
-  "Orthopedics",
-  "Dermatology",
-  "Ophthalmology",
-  "Gynecology",
-  "Psychiatry",
-  "Urology",
-  "Oncology",
-];
-
-// List of locations for filtering
-const LOCATIONS = [
-  "Main Clinic",
-  "East Wing",
-  "West Wing",
-  "North Wing",
-  "South Wing",
-];
 
 const DoctorCard = ({ doctor, onDelete }) => {
   return (
@@ -85,15 +62,50 @@ const DoctorsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filters, setFilters] = useState({
-    specialty: "",
-    location: "",
+    rating: "",
+    experience: "",
+    gender: "",
   });
+  const [pendingFilters, setPendingFilters] = useState(filters);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [query]);
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/doctors", {
-        credentials: "include",
-      });
+      const params = new URLSearchParams();
+
+      if (debouncedQuery.trim() !== "") {
+        params.append("query", debouncedQuery);
+      }
+
+      if (filters.rating) params.append("rating", filters.rating);
+      if (filters.experience) params.append("experience", filters.experience);
+      if (filters.gender) params.append("gender", filters.gender);
+
+      params.append("page", page.toString());
+      params.append("perPage", "6");
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/doctors?${params}`,
+        {
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch doctors");
@@ -101,8 +113,13 @@ const DoctorsList = () => {
 
       const result = await response.json();
       
-      if (result.statusCode === 200 && result.data.doctors) {
+      if (result.statusCode === 200) {
         setDoctors(result.data.doctors);
+        if (result.data.pagination) {
+          setTotalPages(result.data.pagination.totalPages);
+        } else {
+          setTotalPages(Math.ceil(result.data.doctors.length / 6));
+        }
       } else {
         throw new Error(result.message || "Failed to fetch doctors");
       }
@@ -116,7 +133,7 @@ const DoctorsList = () => {
 
   useEffect(() => {
     fetchDoctors();
-  }, []);
+  }, [debouncedQuery, filters, page]);
 
   const handleDelete = async (doctorId) => {
     if (!window.confirm("Are you sure you want to delete this doctor?")) {
@@ -144,21 +161,20 @@ const DoctorsList = () => {
     }
   };
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handlePendingFilterChange = (key, value) => {
+    setPendingFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  const filteredDoctors = doctors.filter((doctor) => {
-    const matchesSpecialty =
-      !filters.specialty || doctor.specialty === filters.specialty;
-    const matchesLocation =
-      !filters.location || doctor.location === filters.location;
-    return matchesSpecialty && matchesLocation;
-  });
+  const applyFilters = () => {
+    setFilters(pendingFilters);
+    setPage(1);
+  };
+
+  const resetFilters = () => {
+    setPendingFilters({ rating: "", experience: "", gender: "" });
+    setFilters({ rating: "", experience: "", gender: "" });
+    setPage(1);
+  };
 
   if (loading) {
     return (
@@ -182,54 +198,130 @@ const DoctorsList = () => {
     <div className={styles.doctorsPage}>
       <PageHeader />
 
-      <div className={styles.filters}>
-        <div className={styles.filterGroup}>
-          <label htmlFor="specialty">Specialty:</label>
-          <select
-            id="specialty"
-            name="specialty"
-            value={filters.specialty}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Specialties</option>
-            {SPECIALTIES.map((specialty) => (
-              <option key={specialty} value={specialty}>
-                {specialty}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.filterGroup}>
-          <label htmlFor="location">Location:</label>
-          <select
-            id="location"
-            name="location"
-            value={filters.location}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Locations</option>
-            {LOCATIONS.map((location) => (
-              <option key={location} value={location}>
-                {location}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className={styles.searchBar}>
+        <input
+          type="text"
+          placeholder="Search doctors"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
       </div>
 
-      <div className={styles.doctorsList}>
-        {filteredDoctors.length === 0 ? (
-          <div className={styles.noDoctors}>No doctors found</div>
-        ) : (
-          filteredDoctors.map((doctor) => (
-            <DoctorCard
-              key={doctor.id}
-              doctor={doctor}
-              onDelete={handleDelete}
-            />
-          ))
-        )}
+      <div className={styles.content}>
+        <aside className={styles.sidebar}>
+          <div className={styles.filterHeader}>
+            <div className={styles.filterTitle}>
+              <h3>Filter By:</h3>
+            </div>
+            <div className={styles.filterButtons}>
+              <span className={styles.resetButton} onClick={resetFilters}>
+                Reset
+              </span>
+              <span className={styles.applyButton} onClick={applyFilters}>
+                Apply
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.filterSection}>
+            <h4>Rating</h4>
+            {["", "1", "2", "3", "4", "5"].map((r) => (
+              <label key={r} className={styles.filterOption}>
+                <input
+                  type="radio"
+                  name="rating"
+                  value={r}
+                  checked={pendingFilters.rating === r}
+                  onChange={() => handlePendingFilterChange("rating", r)}
+                />
+                {r ? `${r} star` : "Show all"}
+              </label>
+            ))}
+          </div>
+
+          <div className={styles.filterSection}>
+            <h4>Experience</h4>
+            {["", "15", "10-15", "5-10", "3-5", "1-3", "0-1"].map((exp) => (
+              <label key={exp} className={styles.filterOption}>
+                <input
+                  type="radio"
+                  name="experience"
+                  value={exp}
+                  checked={pendingFilters.experience === exp}
+                  onChange={() => handlePendingFilterChange("experience", exp)}
+                />
+                {exp ? `${exp} years` : "Show all"}
+              </label>
+            ))}
+          </div>
+
+          <div className={styles.filterSection}>
+            <h4>Gender</h4>
+            {["", "Male", "Female"].map((g) => (
+              <label key={g} className={styles.filterOption}>
+                <input
+                  type="radio"
+                  name="gender"
+                  value={g}
+                  checked={pendingFilters.gender === g}
+                  onChange={() => handlePendingFilterChange("gender", g)}
+                />
+                {g || "Show all"}
+              </label>
+            ))}
+          </div>
+        </aside>
+
+        <div className={styles.mainContent}>
+          <div className={styles.doctorsList}>
+            {doctors.length === 0 ? (
+              <div className={styles.noDoctors}>No doctors found</div>
+            ) : (
+              doctors.map((doctor) => (
+                <DoctorCard
+                  key={doctor.id}
+                  doctor={doctor}
+                  onDelete={handleDelete}
+                />
+              ))
+            )}
+          </div>
+
+          <div className={styles.pagination}>
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className={styles.paginationButton}
+            >
+              &lt; Prev
+            </button>
+
+            {Array.from(
+              { length: Math.min(totalPages, 5) },
+              (_, index) => index + 1
+            ).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`${styles.paginationButton} ${
+                  page === p ? styles.active : ""
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+
+            {totalPages > 5 && <span>...</span>}
+
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className={styles.paginationButton}
+            >
+              Next &gt;
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -31,91 +31,6 @@
   background-color: #45a049;
 }
 
-/* Filters Section */
-.filters {
-  background-color: #f5f5f5;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-}
-
-.searchBox {
-  margin-bottom: 1.5rem;
-}
-
-.searchInput {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.filterControls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-}
-
-.filterGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.filterGroup h4 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-  font-size: 1rem;
-}
-
-.filterOption {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.25rem 0;
-  color: #666;
-}
-
-.filterOption input[type="radio"] {
-  margin: 0;
-}
-
-.filterActions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.resetButton, .applyButton {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.resetButton {
-  background-color: #f5f5f5;
-  color: #666;
-  border: 1px solid #ddd;
-}
-
-.resetButton:hover {
-  background-color: #e0e0e0;
-}
-
-.applyButton {
-  background-color: #2196F3;
-  color: white;
-}
-
-.applyButton:hover {
-  background-color: #1976D2;
-}
-
 /* Doctors List */
 .doctorsList {
   display: grid;
@@ -215,18 +130,4 @@
   color: #666;
   background-color: #f5f5f5;
   border-radius: 8px;
-}
-
-@media (max-width: 768px) {
-  .filterControls {
-    grid-template-columns: 1fr;
-  }
-  
-  .filterActions {
-    flex-direction: column;
-  }
-  
-  .resetButton, .applyButton {
-    width: 100%;
-  }
 } 

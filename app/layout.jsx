@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Sidebar from './components/Sidebar';
+import Sidebar from '../components/Sidebar';
 import styles from './layout.module.css';
 
 export const metadata = {

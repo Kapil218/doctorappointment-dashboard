@@ -113,7 +113,7 @@ const LoginPage = () => {
       }
 
       // If login is successful, redirect to admin dashboard
-      router.push('/admin');
+      router.push('/');
     } catch (err) {
       setError(err.message);
     }
