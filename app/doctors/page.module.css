@@ -177,9 +177,14 @@
 }
 
 /* Doctors List */
+.content {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
 .doctorsList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   margin-bottom: 2rem;
 }
@@ -190,11 +195,14 @@
   border: 1px solid #2d2d2d;
   overflow: hidden;
   transition: all 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .doctorCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .doctorImageContainer {
@@ -314,10 +322,14 @@
 }
 
 .noDoctors {
+  grid-column: 1 / -1;
   text-align: center;
+  padding: 2rem;
+  background: #1f1f1f;
+  border-radius: 12px;
+  border: 1px solid #2d2d2d;
   color: #9ca3af;
-  padding: 3rem 1rem;
-  font-size: 1.1rem;
+  font-style: italic;
 }
 
 .pagination {
@@ -326,6 +338,7 @@
   align-items: center;
   gap: 0.5rem;
   margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
 .paginationButton {
@@ -373,41 +386,17 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 1280px) {
-  .doctorsList {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-}
-
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .doctorsList {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-  }
-
-  .container {
-    padding: 1.5rem;
-  }
-
-  .filterSection {
-    padding: 1.25rem;
-  }
-
-  .filterHeader {
-    gap: 1.5rem;
-  }
-
-  .filterContent {
-    gap: 1.25rem;
-  }
-
-  .filterGroup {
-    min-width: 180px;
   }
 }
 
 @media (max-width: 768px) {
+  .doctorsList {
+    grid-template-columns: 1fr;
+  }
+
   .container {
     padding: 1rem;
   }
@@ -493,51 +482,8 @@
     font-size: 0.95rem;
   }
 
-  .doctorsList {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-  }
-
   .doctorCard {
     max-width: 100%;
-  }
-
-  .doctorImageContainer {
-    height: 200px;
-  }
-
-  .doctorContent {
-    padding: 1.25rem;
-  }
-
-  .doctorInfo h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .specialty {
-    font-size: 0.9rem;
-    margin-bottom: 0.875rem;
-  }
-
-  .experience,
-  .rating,
-  .location {
-    font-size: 0.875rem;
-    margin: 0.625rem 0;
-  }
-
-  .doctorActions {
-    flex-direction: row;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-  }
-
-  .editButton,
-  .scheduleButton,
-  .deleteButton {
-    padding: 0.75rem;
-    font-size: 0.875rem;
   }
 }
 

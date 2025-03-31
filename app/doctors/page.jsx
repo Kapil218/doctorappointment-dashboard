@@ -350,136 +350,134 @@ const DoctorsList = () => {
       </div>
 
       <div className={styles.content}>
-        <aside className={styles.sidebar}>
-          <div className={styles.doctorsList}>
-            {doctors.length === 0 ? (
-              <div className={styles.noDoctors}>No doctors found</div>
-            ) : (
-              doctors.map((doctor) => (
-                <div key={doctor.id} className={styles.doctorCard}>
-                  <div className={styles.doctorImageContainer}>
-                    <Image
-                      src={doctor.image || "/defaultpic.jpg"}
-                      alt={`Dr. ${doctor.name}`}
-                      className={styles.doctorImage}
-                      width={400}
-                      height={400}
-                      priority
-                    />
+        <div className={styles.doctorsList}>
+          {doctors.length === 0 ? (
+            <div className={styles.noDoctors}>No doctors found</div>
+          ) : (
+            doctors.map((doctor) => (
+              <div key={doctor.id} className={styles.doctorCard}>
+                <div className={styles.doctorImageContainer}>
+                  <Image
+                    src={doctor.image || "/defaultpic.jpg"}
+                    alt={`Dr. ${doctor.name}`}
+                    className={styles.doctorImage}
+                    width={400}
+                    height={400}
+                    priority
+                  />
+                </div>
+                <div className={styles.doctorContent}>
+                  <div className={styles.doctorInfo}>
+                    <h3>Dr. {doctor.name}</h3>
+                    <p className={styles.specialty}>{doctor.specialty}</p>
+                    <p className={styles.experience}>
+                      <span>👨‍⚕️</span> {doctor.experience} experience
+                    </p>
+                    <p className={styles.rating}>
+                      <span>⭐</span> {doctor.rating} Rating
+                    </p>
+                    <p className={styles.location}>
+                      <span>📍</span> {doctor.location}
+                    </p>
                   </div>
-                  <div className={styles.doctorContent}>
-                    <div className={styles.doctorInfo}>
-                      <h3>Dr. {doctor.name}</h3>
-                      <p className={styles.specialty}>{doctor.specialty}</p>
-                      <p className={styles.experience}>
-                        <span>👨‍⚕️</span> {doctor.experience} experience
-                      </p>
-                      <p className={styles.rating}>
-                        <span>⭐</span> {doctor.rating} Rating
-                      </p>
-                      <p className={styles.location}>
-                        <span>📍</span> {doctor.location}
-                      </p>
-                    </div>
-                    <div className={styles.doctorActions}>
-                      <Link href={`/doctors/edit/${doctor.id}`} className={styles.editButton}>
-                        Edit
-                      </Link>
-                      <Link href={`/doctors/schedule/${doctor.id}`} className={styles.scheduleButton}>
-                        Schedule
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(doctor.id)}
-                        className={styles.deleteButton}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                  <div className={styles.doctorActions}>
+                    <Link href={`/doctors/edit/${doctor.id}`} className={styles.editButton}>
+                      Edit
+                    </Link>
+                    <Link href={`/doctors/schedule/${doctor.id}`} className={styles.scheduleButton}>
+                      Schedule
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(doctor.id)}
+                      className={styles.deleteButton}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
+        </div>
 
-          <div className={styles.pagination}>
-            <button
-              onClick={() => {
-                console.log('Clicking prev, current page:', page);
-                setPage((p) => Math.max(1, p - 1));
-              }}
-              disabled={page === 1}
-              className={`${styles.paginationButton} ${styles.paginationNav}`}
-            >
-              ← Prev
-            </button>
+        <div className={styles.pagination}>
+          <button
+            onClick={() => {
+              console.log('Clicking prev, current page:', page);
+              setPage((p) => Math.max(1, p - 1));
+            }}
+            disabled={page === 1}
+            className={`${styles.paginationButton} ${styles.paginationNav}`}
+          >
+            ← Prev
+          </button>
 
-            {/* First page */}
-            {page > 3 && (
-              <>
-                <button
-                  onClick={() => setPage(1)}
-                  className={`${styles.paginationButton} ${page === 1 ? styles.active : ''}`}
-                >
-                  1
-                </button>
-                <span className={styles.paginationEllipsis}>...</span>
-              </>
-            )}
+          {/* First page */}
+          {page > 3 && (
+            <>
+              <button
+                onClick={() => setPage(1)}
+                className={`${styles.paginationButton} ${page === 1 ? styles.active : ''}`}
+              >
+                1
+              </button>
+              <span className={styles.paginationEllipsis}>...</span>
+            </>
+          )}
 
-            {/* Page numbers */}
-            {Array.from(
-              { length: Math.min(5, totalPages) },
-              (_, i) => {
-                let pageNum;
-                if (page <= 3) {
-                  pageNum = i + 1;
-                } else if (page >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = page - 2 + i;
-                }
-                return Math.max(1, Math.min(pageNum, totalPages));
+          {/* Page numbers */}
+          {Array.from(
+            { length: Math.min(5, totalPages) },
+            (_, i) => {
+              let pageNum;
+              if (page <= 3) {
+                pageNum = i + 1;
+              } else if (page >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = page - 2 + i;
               }
-            )
-              .filter((value, index, self) => self.indexOf(value) === index)
-              .map((p) => (
-                <button
-                  key={p}
-                  onClick={() => {
-                    console.log('Clicking page number:', p);
-                    setPage(p);
-                  }}
-                  className={`${styles.paginationButton} ${page === p ? styles.active : ''}`}
-                >
-                  {p}
-                </button>
-              ))}
+              return Math.max(1, Math.min(pageNum, totalPages));
+            }
+          )
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .map((p) => (
+              <button
+                key={p}
+                onClick={() => {
+                  console.log('Clicking page number:', p);
+                  setPage(p);
+                }}
+                className={`${styles.paginationButton} ${page === p ? styles.active : ''}`}
+              >
+                {p}
+              </button>
+            ))}
 
-            {/* Last page */}
-            {page < totalPages - 2 && (
-              <>
-                <span className={styles.paginationEllipsis}>...</span>
-                <button
-                  onClick={() => setPage(totalPages)}
-                  className={`${styles.paginationButton} ${page === totalPages ? styles.active : ''}`}
-                >
-                  {totalPages}
-                </button>
-              </>
-            )}
+          {/* Last page */}
+          {page < totalPages - 2 && (
+            <>
+              <span className={styles.paginationEllipsis}>...</span>
+              <button
+                onClick={() => setPage(totalPages)}
+                className={`${styles.paginationButton} ${page === totalPages ? styles.active : ''}`}
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
 
-            <button
-              onClick={() => {
-                console.log('Clicking next, current page:', page);
-                setPage((p) => Math.min(totalPages, p + 1));
-              }}
-              disabled={page === totalPages}
-              className={`${styles.paginationButton} ${styles.paginationNav}`}
-            >
-              Next →
-            </button>
-          </div>
-        </aside>
+          <button
+            onClick={() => {
+              console.log('Clicking next, current page:', page);
+              setPage((p) => Math.min(totalPages, p + 1));
+            }}
+            disabled={page === totalPages}
+            className={`${styles.paginationButton} ${styles.paginationNav}`}
+          >
+            Next →
+          </button>
+        </div>
       </div>
     </div>
   );

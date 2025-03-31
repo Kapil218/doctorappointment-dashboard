@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
+const ADMIN_EMAIL = "admin@tothenew.com";
+
 const LoginHeader = () => (
   <div className={styles.loginHeader}>
     <h1 className={styles.loginTitle}>Admin Login</h1>
@@ -39,7 +41,7 @@ const LoginForm = ({ formData, onSubmit, onChange, error }) => (
       name="email"
       value={formData.email}
       onChange={onChange}
-      placeholder="Enter your email"
+      placeholder="Enter admin email"
       label="Email"
     />
 
@@ -82,6 +84,12 @@ const LoginPage = () => {
     // Validation
     if (!formData.email || !formData.password) {
       setError("Please enter both email and password");
+      return;
+    }
+
+    // Check if the email is the admin email
+    if (formData.email !== ADMIN_EMAIL) {
+      setError("Access denied. Only admin login is allowed.");
       return;
     }
 

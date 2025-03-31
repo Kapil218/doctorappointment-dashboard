@@ -10,6 +10,8 @@ const StatusBadge = ({ status }) => {
         return styles.statusApproved;
       case "rejected":
         return styles.statusRejected;
+      case "completed":
+        return styles.statusCompleted;
       default:
         return styles.statusPending;
     }
@@ -61,14 +63,21 @@ const AppointmentRow = ({ appointment, onStatusChange }) => {
           <button
             className={`${styles.actionButton} ${styles.approveButton}`}
             onClick={() => onStatusChange(appointment.id, "approved")}
-            disabled={appointment.status === "approved"}
+            disabled={appointment.status === "approved" || appointment.status === "completed"}
           >
             Approve
           </button>
           <button
+            className={`${styles.actionButton} ${styles.completeButton}`}
+            onClick={() => onStatusChange(appointment.id, "completed")}
+            disabled={appointment.status === "completed" || appointment.status === "rejected" || appointment.status === "pending"}
+          >
+            Complete
+          </button>
+          <button
             className={`${styles.actionButton} ${styles.rejectButton}`}
             onClick={() => onStatusChange(appointment.id, "rejected")}
-            disabled={appointment.status === "rejected"}
+            disabled={appointment.status === "rejected" || appointment.status === "completed"}
           >
             Reject
           </button>
@@ -92,8 +101,13 @@ const AppointmentsHeader = () => (
 
 const Dashboard = () => {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [dateOrder, setDateOrder] = useState("newest");
+  const [consultationTypes, setConsultationTypes] = useState([]);
 
   const fetchAppointments = async () => {
     try {
@@ -107,6 +121,12 @@ const Dashboard = () => {
 
       const data = await response.json();
       setAppointments(data.data);
+      setFilteredAppointments(data.data);
+      
+      // Extract unique consultation types
+      const types = [...new Set(data.data.map(app => app.consultation_type))];
+      setConsultationTypes(types);
+      
       setError(null);
     } catch (err) {
       setError('Failed to load appointments');
@@ -119,6 +139,34 @@ const Dashboard = () => {
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    let filtered = [...appointments];
+    
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(app => app.status === statusFilter);
+    }
+    
+    // Apply type filter
+    if (typeFilter !== "all") {
+      filtered = filtered.filter(app => app.consultation_type === typeFilter);
+    }
+    
+    // Apply date ordering
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.appointment_time);
+      const dateB = new Date(b.appointment_time);
+      
+      if (dateOrder === "newest") {
+        return dateB - dateA;
+      } else {
+        return dateA - dateB;
+      }
+    });
+    
+    setFilteredAppointments(filtered);
+  }, [statusFilter, typeFilter, dateOrder, appointments]);
 
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -147,6 +195,24 @@ const Dashboard = () => {
     }
   };
 
+  const handleFilterChange = (e, filterType) => {
+    const value = e.target.value;
+    
+    switch (filterType) {
+      case 'status':
+        setStatusFilter(value);
+        break;
+      case 'type':
+        setTypeFilter(value);
+        break;
+      case 'date':
+        setDateOrder(value);
+        break;
+      default:
+        break;
+    }
+  };
+
   if (loading) {
     return <div className={styles.loading}>Loading appointments...</div>;
   }
@@ -157,15 +223,71 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      <h1 className={styles.pageTitle}>Appointment Requests</h1>
+      <div className={styles.dashboardHeader}>
+        <h1 className={styles.pageTitle}>Appointment Requests</h1>
+        
+        <div className={styles.filtersWrapper}>
+          <div className={styles.filterContainer}>
+            <label htmlFor="statusFilter" className={styles.filterLabel}>
+              Status:
+            </label>
+            <select
+              id="statusFilter"
+              className={styles.filterSelect}
+              value={statusFilter}
+              onChange={(e) => handleFilterChange(e, 'status')}
+            >
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          
+          <div className={styles.filterContainer}>
+            <label htmlFor="typeFilter" className={styles.filterLabel}>
+              Type:
+            </label>
+            <select
+              id="typeFilter"
+              className={styles.filterSelect}
+              value={typeFilter}
+              onChange={(e) => handleFilterChange(e, 'type')}
+            >
+              <option value="all">All Types</option>
+              {consultationTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className={styles.filterContainer}>
+            <label htmlFor="dateOrder" className={styles.filterLabel}>
+              Date:
+            </label>
+            <select
+              id="dateOrder"
+              className={styles.filterSelect}
+              value={dateOrder}
+              onChange={(e) => handleFilterChange(e, 'date')}
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       <div className={styles.appointmentsContainer}>
         <AppointmentsHeader />
         
-        {appointments.length === 0 ? (
+        {filteredAppointments.length === 0 ? (
           <div className={styles.noAppointments}>No appointments found</div>
         ) : (
-          appointments.map((appointment) => (
+          filteredAppointments.map((appointment) => (
             <AppointmentRow
               key={appointment.id}
               appointment={appointment}

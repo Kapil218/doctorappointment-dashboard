@@ -103,22 +103,6 @@
   font-size: 0.9rem;
 }
 
-.loginFooter {
-  text-align: center;
-  margin-top: 1.5rem;
-  color: #666;
-}
-
-.loginFooter a {
-  color: #1a1a1a;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.loginFooter a:hover {
-  text-decoration: underline;
-}
-
 @media (max-width: 480px) {
   .loginCard {
     padding: 1.5rem;

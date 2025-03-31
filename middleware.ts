@@ -4,8 +4,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('accessToken')?.value
   const refreshToken = request.cookies.get('refreshToken')?.value
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
-                    request.nextUrl.pathname.startsWith('/signup')
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login')
 
   // If no tokens and trying to access protected route
   if ((!accessToken || !refreshToken) && !isAuthPage) {
