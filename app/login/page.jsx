@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import styles from "./page.module.css";
 
 const LoginHeader = () => (
@@ -58,14 +57,6 @@ const LoginForm = ({ formData, onSubmit, onChange, error }) => (
       Login
     </button>
   </form>
-);
-
-const LoginFooter = () => (
-  <div className={styles.loginFooter}>
-    <p>
-      Don't have an account? <Link href="/signup">Sign up here</Link>
-    </p>
-  </div>
 );
 
 const LoginPage = () => {
@@ -129,7 +120,6 @@ const LoginPage = () => {
           onChange={handleChange}
           error={error}
         />
-        <LoginFooter />
       </div>
     </div>
   );
