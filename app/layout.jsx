@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Sidebar from '../components/Sidebar';
+import './globals.css';
 import styles from './layout.module.css';
 import { Montserrat } from "next/font/google";
 
